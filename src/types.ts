@@ -7,7 +7,7 @@ export type User = {
 
 export type Comment = {
   user: string;
-  message: string;
+  content: string;
 };
 
 export type Candidate = {
@@ -16,5 +16,6 @@ export type Candidate = {
   biography: string;
   electoralProgram: string;
   votes: number;
+  img : string;
   comments: Comment[];
 };

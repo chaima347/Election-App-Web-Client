@@ -24,17 +24,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const refreshUser = async () => {
     try {
       const user = await getMyUser();
-      user.favorites = [
-        {
-          _id: "3",
-          name: "Candidate 1",
-          biography: "",
-          comments: [],
-          electoralProgram: "",
-          votes: 0,
-        },
-      ];
+
+      console.log(user);
       setUser(user);
+    
     } catch {
       localStorage.removeItem("token");
       setUser(null);

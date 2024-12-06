@@ -1,6 +1,6 @@
 import React, { useState } from "react";
+import { useAuth } from "./AuthContext";  // Import AuthContext
 import { Candidate } from "./types";
-
 import AddComment from "./AddComment";
 import { favorizeCandidate, voteCandidate } from "./service";
 
@@ -9,22 +9,40 @@ interface CandidateDetailsProps {
 }
 
 const CandidateDetails: React.FC<CandidateDetailsProps> = ({ candidate }) => {
+  const { user } = useAuth();  // Use the AuthContext to get the current user
   const [addCommentVisible, setAddCommentVisible] = useState<boolean>(false);
   const toggleAddComment = () => setAddCommentVisible(!addCommentVisible);
 
   const handleOnFavorite = async () => {
+    if (!user) {
+      alert("You must be logged in to favorize.");
+      return;
+    }
     try {
-      await favorizeCandidate(candidate._id);
+      const response = await favorizeCandidate(candidate._id, user._id);
+      if (response.message === "Candidat favorisé") {
+        alert("Candidate favorized successfully!");
+      } else if (response.message === "Candidat déjà favorisé") {
+        alert("You have already favorized this candidate.");
+      }
     } catch (error) {
-      console.error(error);
+      console.error("Error favorizing candidate:", error);
+      alert("you already favorized this candidate");
     }
   };
 
   const handleOnVote = async () => {
+    if (!user) {
+      alert("You must be logged in to vote.");
+      return;
+    }
     try {
-      await voteCandidate(candidate._id);
+      const response = await voteCandidate(candidate._id, user._id);  
+      candidate.votes = response.candidate.votes;
+      alert(response.message);
     } catch (error) {
-      console.error(error);
+      console.error("Failed to vote:", error);
+      alert("You already Voted !");
     }
   };
 
@@ -32,6 +50,16 @@ const CandidateDetails: React.FC<CandidateDetailsProps> = ({ candidate }) => {
     <div className="container mt-5" id={candidate._id}>
       <div className="card shadow-lg">
         <div className="card-body">
+          {/* Display Candidate Image */}
+          {candidate.img && (
+            <img 
+              src={candidate.img} 
+              alt={candidate.name} 
+              className="img-fluid rounded mb-3" 
+              style={{ maxHeight: "300px", objectFit: "cover" }} 
+            />
+          )}
+
           <h1 className="card-title text-primary">{candidate.name}</h1>
           <p className="card-text">{candidate.biography}</p>
 
@@ -48,7 +76,7 @@ const CandidateDetails: React.FC<CandidateDetailsProps> = ({ candidate }) => {
           <ul className="list-group mb-3">
             {candidate.comments.map((comment, index) => (
               <li key={index} className="list-group-item">
-                {comment.message}
+                <strong>{comment.user}:</strong> {comment.content}
               </li>
             ))}
           </ul>

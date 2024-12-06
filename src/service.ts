@@ -74,14 +74,25 @@ export async function getAllCandidates() {
 }
 
 // Vote for a candidate
-export async function voteCandidate(id: string) {
-  return makeRequest<{ message: string; candidate: Candidate }>(
-    `/api/candidates/${id}/vote`,
-    {
-      method: "POST",
-    }
-  );
+export async function voteCandidate(id: string, userId: string) {
+  try {
+    const response = await makeRequest<{ message: string; candidate: Candidate }>(
+      `/api/candidates/vote/${id}`, 
+      {
+        method: "POST",
+        body: JSON.stringify({ userId }), 
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error("Error while voting:", error);
+    throw error;  // Rethrow for further handling
+  }
 }
+
 
 // Comment on a candidate
 export async function commentCandidate(
@@ -99,14 +110,19 @@ export async function commentCandidate(
 }
 
 // Favorize a candidate
-export async function favorizeCandidate(id: string) {
+export async function favorizeCandidate(id: string, userId: string) {
   return makeRequest<{ message: string; candidate: Candidate }>(
-    `/api/candidates/${id}/favorize`,
+    `/api/users/favoriser/${id}`,
     {
       method: "POST",
+      body: JSON.stringify({ userId }), 
+      headers: {
+        "Content-Type": "application/json",
+      },
     }
   );
 }
+
 
 // Search candidates
 export async function searchCandidates(query: string) {

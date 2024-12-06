@@ -1,46 +1,32 @@
-import React, { useEffect, useState } from "react";
-import CandidateDetails from "./CandidateDetails";
+import React, { useState, useEffect } from "react";
+import { getAllCandidates } from "./service";
 import { Candidate } from "./types";
+import CandidateDetails from "./CandidateDetails";
 
 const Candidates: React.FC = () => {
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [filtredCandidates, setFiltredCandidates] = useState<Candidate[]>([]);
   const [search, setSearch] = useState("");
 
-  const candidates: Candidate[] = [
-    {
-      _id: "1",
-      name: "John Doe",
-      biography: "John Doe has been a community leader for over 20 years...",
-      electoralProgram:
-        "John's program focuses on education, healthcare, and infrastructure...",
-      votes: 1200,
-      comments: [],
-    },
-    {
-      _id: "2",
-      name: "Jane Smith",
-      biography:
-        "Jane Smith is a former teacher and advocate for educational reform...",
-      electoralProgram:
-        "Jane's program emphasizes renewable energy, public transportation, and affordable housing...",
-      votes: 950,
-      comments: [],
-    },
-    {
-      _id: "3",
-      name: "Alice Johnson",
-      biography:
-        "Alice Johnson has a background in law and has worked on various social justice initiatives...",
-      electoralProgram:
-        "Alice's program includes criminal justice reform, economic equality, and healthcare access...",
-      votes: 1100,
-      comments: [],
-    },
-  ];
+  // Fetch candidates from backend
+  useEffect(() => {
+    const fetchCandidates = async () => {
+      try {
+        const data = await getAllCandidates();
+        setCandidates(data);
+        setFiltredCandidates(data); // Initialize filtered candidates with full list
+      } catch (error) {
+        console.error("Failed to fetch candidates:", error);
+      }
+    };
 
+    fetchCandidates();
+  }, []);
+
+  // Handle search filtering
   useEffect(() => {
     handleFilter(search);
-  }, [search]);
+  }, [search, candidates]);
 
   const handleFilter = (searchValue: string) => {
     const filtered = candidates.filter((candidate) =>
