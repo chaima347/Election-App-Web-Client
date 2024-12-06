@@ -1,6 +1,6 @@
-# Election Management App Frontend
+# Election Management App Web Client
 
-This repository contains the frontend implementation of an **Election Management System**. Built with **React.js**, the frontend provides an intuitive and responsive interface for managing and interacting with election data.
+This repository contains the web client implementation of an **Election Management System**. Built with **React.js**, the web client provides an intuitive and responsive interface for managing and interacting with election data.
 
 ## Features
 
